@@ -95,8 +95,9 @@ class FocalLoss(Module):
     
     def forward(self, inp:Tensor, targ:Tensor) -> Tensor:
         "Applies focal loss based on https://arxiv.org/pdf/1708.02002.pdf"
-        ce_loss = F.cross_entropy(inp, targ, weight=self.weight, reduction="none")
+        ce_loss = F.cross_entropy(inp, targ, reduction="none")
         p_t = torch.exp(-ce_loss)
+        if self.weight is not None: ce_loss = F.cross_entropy(inp, targ, weight=self.weight, reduction="none")
         loss = (1 - p_t)**self.gamma * ce_loss
         if self.reduction == "mean":
             loss = loss.mean()
