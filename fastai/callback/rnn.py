@@ -36,7 +36,7 @@ class RNNRegularizer(Callback):
         if self.alpha: self.learn.loss_grad += self.alpha * self.rnn.out.float().pow(2).mean()
         if self.beta:
             h = self.rnn.raw_out
-            if len(h)>1: self.learn.loss_grad += self.beta * (h[:,1:] - h[:,:-1]).float().pow(2).mean()
+            if h.shape[1]>1: self.learn.loss_grad += self.beta * (h[:,1:] - h[:,:-1]).float().pow(2).mean()
 
 # %% ../../nbs/34_callback.rnn.ipynb #2fdc7811
 def rnn_cbs(alpha=0., beta=0.):
