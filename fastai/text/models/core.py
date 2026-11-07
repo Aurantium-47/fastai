@@ -97,7 +97,8 @@ class SentenceEncoder(Module):
         outs,masks = [],[]
         for i in range(0, sl, self.bptt):
             #Note: this expects that sequence really begins on a round multiple of bptt
-            real_bs = (input[:,i] != self.pad_idx).long().sum()
+            # The final chunk may contain padding-only rows before rows with real tokens.
+            real_bs = bs if i+self.bptt >= sl else (input[:,i] != self.pad_idx).long().sum()
             o = self.module(input[:real_bs,i: min(i+self.bptt, sl)])
             if self.max_len is None or sl-i <= self.max_len:
                 outs.append(o)
@@ -114,7 +115,7 @@ def masked_concat_pool(
 ) -> Tensor: # Concatenation of [last_hidden, max_pool, avg_pool]
     "Pool `MultiBatchEncoder` outputs into one vector [last_hidden, max_pool, avg_pool]"
     lens = output.shape[1] - mask.long().sum(dim=1)
-    last_lens = mask[:,-bptt:].long().sum(dim=1)
+    last_lens = mask.long().flip(1).argmin(dim=1)
     avg_pool = output.masked_fill(mask[:, :, None], 0).sum(dim=1)
     avg_pool.div_(lens.type(avg_pool.dtype)[:,None])
     max_pool = output.masked_fill(mask[:,:,None], -float('inf')).max(dim=1)[0]
