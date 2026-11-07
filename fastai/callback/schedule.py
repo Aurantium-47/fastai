@@ -142,7 +142,7 @@ def fit_flat_cos(self:Learner, n_epoch, lr=None, div_final=1e5, pct_start=0.75, 
     self.opt.set_hyper('lr', self.lr if lr is None else lr)
     lr = np.array([h['lr'] for h in self.opt.hypers])
     scheds = {'lr': combined_cos(pct_start, lr, lr, lr/div_final)}
-    self.fit(n_epoch, cbs=ParamScheduler(scheds)+L(cbs), reset_opt=reset_opt, wd=wd, start_epoch=0)
+    self.fit(n_epoch, cbs=ParamScheduler(scheds)+L(cbs), reset_opt=reset_opt, wd=wd, start_epoch=start_epoch)
 
 # %% ../../nbs/14_callback.schedule.ipynb #407b8d38
 @patch
