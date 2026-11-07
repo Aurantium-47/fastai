@@ -31,6 +31,7 @@ class _BaseOptimizer():
         h # Hyperparameter (unused but needed because unpack *o)
     ):
         p.requires_grad_(rg or state.get('force_train', False))
+        if not p.requires_grad: p.grad = None
     def freeze_to(self,
         n:int # Freeze up to `n` layers
     ):
